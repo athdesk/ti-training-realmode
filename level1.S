@@ -14,7 +14,7 @@ setup:
     mov es, ax
     mov ss, ax
     mov sp, 0x9000
-    call debug
+    
     jmp main
 
 
@@ -22,94 +22,14 @@ setup:
 USERMEM dw 0x6000
 COM_BUFFER dw 0x7000
 COM_BUFFER_SIZE dw 64
-DEBUG_ACTIVE db 0
-
-debug:
-        pusha
-        
-        cmp byte [DEBUG_ACTIVE], 0
-        je debug_end
-
-        call newline
-        mov ax, STR_AX
-        call puts
-        popa
-        pusha
-        call xprint_word
-        call newline
-
-        mov ax, STR_BX
-        call puts
-        mov ax, bx
-        call xprint_word
-        call newline
-
-        mov ax, STR_CX
-        call puts
-        popa
-        pusha
-        mov ax, cx
-        call xprint_word
-        call newline
-
-        mov ax, STR_DX
-        call puts
-        popa
-        pusha
-        mov ax, dx
-        call xprint_word
-        call newline
-
-        mov ax, STR_IN
-        call puts
-        mov bx, COM_BUFFER
-        mov ax, word [bx]
-        call puts
-        call newline
-
-
-
-        ; mov ax, 0x41
-        ; call putc
-        ; call newline
-        ; mov ax, 0x41
-        ; call xprint_byte
-        ; call newline
-
-        ; mov ax, 0x4142
-        ; call xprint_word
-        ; call newline
-
-        ; mov ax, word [TEST_BUF_0 + 2]
-        ; mov dx, word [TEST_BUF_0 + 4]
-        ; call hexstr_to_word
-        ; call xprint_word
-
-        ; call newline
-        ; mov ax, word [TEST_BUF_1 + 0]
-        ; mov dx, word [TEST_BUF_1 + 2]
-        ; call hexstr_to_word
-        ; call xprint_word
-        debug_end:
-        call newline
-        popa
-        ret
-        STR_AX db "AX-", 0
-        STR_BX db "BX-", 0
-        STR_CX db "CX-", 0
-        STR_DX db "DX-", 0
-        STR_IN db "IN>", 0
-
 main:
-
     call get_command
-
 
     mov bx, dx
     shl bx, 1
     add bx, word [USERMEM] ; slot address in bx
 
-    call debug
+    
 
     cmp al, 0
     je main_read
