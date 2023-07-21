@@ -238,4 +238,4 @@ times 510-($-$$) db 0
 dw 0xaa55
 
 ; flag
-db "flag{smashing_the_staaaaaaaaaaaaaaack_for_fun_and_profit}"
+db "flag{smashing_the_stAAAAAAAAAAAAAAAck_for_fun_and_profit}"
