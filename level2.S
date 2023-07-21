@@ -13,7 +13,7 @@ setup:
     mov ds, ax
     mov es, ax
     mov ss, ax
-    mov sp, 0x9000
+    mov sp, 0x8000
     
     jmp main
 
@@ -23,13 +23,20 @@ USERMEM dw 0x6000
 COM_BUFFER dw 0x7000
 COM_BUFFER_SIZE dw 64
 main:
+    cmp bx, 0x60d2 ; slot is 0x69
+    jne main_no_easter_egg
+        mov ax, EASTER_EGG_STR
+        call puts
+    main_no_easter_egg:
+
     call get_command
+
 
     mov bx, dx
     shl bx, 1
     add bx, word [USERMEM] ; slot address in bx
 
-    
+    push bx
 
     cmp al, 0
     je main_read
@@ -41,17 +48,30 @@ main:
     main_read:
         mov ax, word [bx]
         call xprint_word
-        jmp main
+        jmp main_end
     main_write:
         call get_xword
         mov word [bx], dx
-        jmp main
+        jmp main_end
     main_call:
-        mov ax, NO_YOU_CANT
-        call puts
+        call deny
+    
+    main_end:
+    pop bx
     jmp main
 
+deny:
+    mov ax, NO_YOU_CANT
+    call puts
+    call main ; bug here, can call main -> deny -> main -> deny -> ... to stack overflow
+    ; the distance is 0x8000 - 0x7c00 = 0x400, and for each call 4 extra bytes are pushed
+    ; 2 for the return address, 2 for the pushed bx which is never popped
+    ; so at most 0x400 / 4 = 0x100 calls can be made before the stack overflows
+    ; realistically we will reach code much earlier, as code can be up to 0x200 (512) bytes long
+    
+    ; 46 7c 66 90 46 7c 00 5b 46 7c 00 c3 works if jl does not take, in getc
 NO_YOU_CANT db 0x0a, "Sorry, management blocked execute calls", 0
+EASTER_EGG_STR db 0x0a, "(hehe funny number)", 0
 
 ; FUNCTIONS
 ; Calling convention is param1 = a, param2 = d ; b is preserved
@@ -230,4 +250,4 @@ times 510-($-$$) db 0
 dw 0xaa55
 
 ; flag
-db "flag{ring0_is_not_so_scary_after_all}"
+db "flag{real_mode_is_the_far_west_and_i_love_it}"

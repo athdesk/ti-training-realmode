@@ -18,3 +18,12 @@ services:
         - ASM=level2.S
     ports:
       - "1338:1337"
+
+  level-3:
+    build:
+      dockerfile: ./common/Dockerfile
+      context: .
+      args:
+        - ASM=level3.S
+    ports:
+      - "1339:1337"
