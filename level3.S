@@ -10,7 +10,7 @@ bits 16
 
 setup:
     mov sp, 0x8002
-    mov ax, 0xf3f3
+    mov ax, 0xfeeb
     push ax
     jmp main
     db 00, 00, 00
@@ -238,4 +238,4 @@ times 510-($-$$) db 0
 dw 0xaa55
 
 ; flag
-db "flag{real_mode_is_the_far_west_and_i_love_it}"
+db "flag{smashing_the_staaaaaaaaaaaaaaack_for_fun_and_profit}"
